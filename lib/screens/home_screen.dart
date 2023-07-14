@@ -14,6 +14,10 @@ class HomeScreen extends StatefulWidget {
 class _HomeScreenState extends State<HomeScreen> {
   AdventureModel? adventureModel;
 
+  bool isLoading = true;
+  bool hasError = false;
+  String errorMsg = "";
+
   @override
   void initState() {
     WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
@@ -42,11 +46,18 @@ class _HomeScreenState extends State<HomeScreen> {
               if (state is AdventureLoaded) {
                 setState(() {
                   adventureModel = state.adventureModel;
+                  hasError = false;
+                  isLoading = false;
                 });
                 print("Loaded ${state.adventureModel.data.length}");
               }
               if (state is AdventureFailed) {
                 print("something went wrong");
+                setState(() {
+                  isLoading = false;
+                  hasError = true;
+                  errorMsg = state.errorMessage;
+                });
               }
             },
             child: Container(),
@@ -58,6 +69,29 @@ class _HomeScreenState extends State<HomeScreen> {
               currentIndex: 0,
             ),
           ],
+          if (isLoading == true) ...[
+            const Center(
+              child: CircularProgressIndicator(),
+            )
+          ],
+          if (hasError == true) ...[
+            Center(
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Text(
+                    "Opps !!\nSomething went wrong !!",
+                    style: Theme.of(context).textTheme.headlineSmall,
+                  ),
+                  const SizedBox(height: 10),
+                  Text(
+                    "$errorMsg",
+                    style: Theme.of(context).textTheme.titleLarge,
+                  ),
+                ],
+              ),
+            ),
+          ]
         ],
       ),
     );

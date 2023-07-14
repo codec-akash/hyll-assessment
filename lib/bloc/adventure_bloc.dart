@@ -13,21 +13,23 @@ class AdventureBloc extends Bloc<AdventureEvent, AdventureState> {
     on<LoadAdventure>((event, emit) async {
       emit(AdventureLoading());
       print("started here");
-      if ((adventure?.offset ?? 0) != adventure?.count) {
-        print("started here inside if condition");
-        AdventureModel loadedAdventure =
-            await adventureRepo.loadAdventure(adventure?.offset ?? 10);
-        adventure = AdventureModel(
-          count: loadedAdventure.count,
-          data: loadedAdventure.data,
-          offset: (adventure?.offset ?? 0) + 10,
-        );
-        print("started here success");
-        emit(AdventureLoaded(adventureModel: adventure!));
-      } else {
-        emit(AdventureLoaded(adventureModel: adventure!));
-      }
-      try {} catch (e) {
+      try {
+        if ((adventure?.offset ?? 0) != adventure?.count) {
+          print("started here inside if condition");
+          AdventureModel loadedAdventure =
+              await adventureRepo.loadAdventure(adventure?.offset ?? 10);
+          adventure = AdventureModel(
+            count: loadedAdventure.count,
+            data: loadedAdventure.data,
+            offset: (adventure?.offset ?? 0) + 10,
+          );
+          print("started here success");
+          emit(AdventureLoaded(adventureModel: adventure!));
+        } else {
+          emit(AdventureLoaded(adventureModel: adventure!));
+        }
+      } catch (e) {
+        print("Has Error");
         emit(AdventureFailed(errorMessage: e.toString()));
       }
     });
